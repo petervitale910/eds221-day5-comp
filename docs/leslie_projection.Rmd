@@ -10,32 +10,32 @@ library(tidyverse)
 
 A population of fish we're interested in has four life stages: eggs (E), fry (F), juvenile (J), breeding adult (A). You are told that annually:
 
-- Each breeding adult will produce, on average, 600 eggs
-- 5% of eggs will survive to become fry
-- 20% of fry will survive to become juveniles
-- 16% of juveniles will survive to become adults
-- Adult survival rate year to year is 90%
+-   Each breeding adult will produce, on average, 600 eggs
+-   5% of eggs will survive to become fry
+-   20% of fry will survive to become juveniles
+-   16% of juveniles will survive to become adults
+-   Adult survival rate year to year is 90%
 
-Recall the Leslie matrix from EDS 212. Matrix multiplication (using the dot product `%*%` of the matrix with the populations at each life stage) yields the population structure at the following year. 
+Recall the Leslie matrix from EDS 212. Matrix multiplication (using the dot product `%*%` of the matrix with the populations at each life stage) yields the population structure at the following year.
 
 ### Create the Leslie matrix:
 
 ```{r}
 # Make the Leslie Matrix:
-fish_leslie <- matrix(c(0, 0, 0, 600, 0.05, 0, 0, 0, 0, 0.20, 0, 0, 0, 0, 0.16, 0.9), nrow = 4, ncol = 4, byrow = TRUE)
+fish_leslie <- matrix(c(0, 0, 0, 200, 0.05, 0, 0, 0, 0, 0.10, 0, 0, 0, 0, 0.16, 0.9), nrow = 4, ncol = 4, byrow = TRUE)
 
 # Check it out: 
 fish_leslie
 ```
 
-The initial population structure is given by: 
+The initial population structure is given by:
+
 ```{r}
 # Initial population structure (Roe, Fry, Juvenile, Adult): 
-fish_year0 <- c(5000, 8000, 600, 400)
+fish_year0 <- c(5000, 8000, 600, 400) #initial conditions
 ```
 
-
-Add line-by-line comments wheres prompted in the code below, explaining what each is doing. Make sure that you are talking with your neighbors about what is really being created at each step. 
+Add line-by-line comments wheres prompted in the code below, explaining what each is doing. Make sure that you are talking with your neighbors about what is really being created at each step.
 
 ```{r}
 # Model projections
@@ -44,30 +44,31 @@ Add line-by-line comments wheres prompted in the code below, explaining what eac
 # ------ comment line-by-line ---- #
 
 # The line below...
-time_yr <- seq(from = 0, to = 8, by = 1)
+time_yr <- seq(from = 0, to = 8, by = 1) #create vector for year as a time series to estimate pop size
 
 # The line below...
-proj_year <- matrix(ncol = length(fish_year0), nrow = length(time_yr))
+proj_year <- matrix(ncol = length(fish_year0), nrow = length(time_yr)) #blank matrix 
 
 # The line below...
-proj_year[1, ] <- fish_year0
+proj_year[1, ] <- fish_year0  #first row into fish_year0
 
 # The for loop below...
-for (i in 2:length(time_yr)) {
+for (i in 2:length(time_yr)) { #starts with year1
   proj_year[i,] <- fish_leslie %*% proj_year[i-1,]
-}
+} #Dot product of fish_leslie and proj_year, filling it as you go 
 
 
 # The rest is wrangling & visualization (run to check it out):
-colnames(proj_year) <- c("eggs", "fry", "juvenile", "adult")
+colnames(proj_year) <- c("eggs", "fry", "juvenile", "adult")# CHanging column names of matrix (important for pivoting longer)
 
-proj_df <- data.frame(time_yr, proj_year) %>% 
-  pivot_longer(cols = -time_yr, names_to = "lifestage", values_to = "stage_population")
+proj_df <- data.frame(time_yr, proj_year) %>%  
+  pivot_longer(cols = -time_yr, names_to = "lifestage", values_to = "stage_population") #pivotting and changing to be able to graph more easily 
 
 ggplot(data = proj_df, aes(x = time_yr, y = stage_population)) +
-  geom_line(aes(color = lifestage)) +
-  scale_y_log10()
+  geom_line(aes(color = lifestage)) + #color = stage of life
+  scale_y_log10()# plot it with y on a log scale 
+
 
 ```
 
-Test different combinations of survival / reproduction and starting population structures to see what happens! 
+Test different combinations of survival / reproduction and starting population structures to see what happens!
