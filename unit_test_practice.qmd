@@ -1,0 +1,47 @@
+---
+title: "Unit test practice"
+format: html
+editor: visual
+---
+
+## Unit testing with 'testthat' package
+
+```{r}
+pacman::p_load("testthat", "devtools", "remotes")
+```
+
+write a function to practice unit tests
+
+This function is going to find the mean value of each column, and return the lowest and highest mean
+
+We would expect:
+
+-  output is numeric
+-  output = 2 
+-  the first value \< second value
+
+```{r}
+mean_range <- function(df){
+  col_means <- apply (X = df, #return mean value of each column
+                      MARGIN = 2,
+                      FUN = mean,
+                      na.rm = TRUE)
+  col_mean_max <- max(col_means)
+  col_mean_min <- min(col_means)
+  return(c(col_mean_min, col_mean_max))
+}
+
+mean_range(df = mtcars)
+```
+write some unit tests!
+
+```{r}
+#| include: false
+#test that the output is of length 2
+expect_length(mean_range(df = mtcars), 2)
+
+#Nothing back is good, only will yell when something is bad
+
+
+```
+
