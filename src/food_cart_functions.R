@@ -3,3 +3,5 @@ name_cart <- function (food,animal){
                " ", stringr:: str_to_title(food), " Mart"))
 }
 
+
+
