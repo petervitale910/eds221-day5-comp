@@ -7,6 +7,7 @@ editor: visual
 ## Unit testing with 'testthat' package
 
 ```{r}
+rm(list = ls())
 pacman::p_load("testthat", "devtools", "remotes")
 ```
 
@@ -36,11 +37,23 @@ mean_range(df = mtcars)
 write some unit tests!
 
 ```{r}
-#| include: false
+#| include: false #include in render
 #test that the output is of length 2
 expect_length(mean_range(df = mtcars), 2)
 
 #Nothing back is good, only will yell when something is bad
+
+expect_true(mean_range(mtcars)[1] < mean_range(mtcars)[2]) #1st value < 2nd
+
+```
+
+## Practice sourcing functions 
+```{r}
+#source our food cart function
+source(here::here("src","food_cart_functions.R"))
+
+#Test running our function
+name_cart(food = "strawberry", animal = "marmot")
 
 
 ```
